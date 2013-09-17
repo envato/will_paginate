@@ -42,7 +42,7 @@ module WillPaginate
 
     # Returns HTML representing page links for a WillPaginate::Collection-like object.
     # In case there is no more than one page in total, nil is returned.
-    # 
+    #
     # ==== Options
     # * <tt>:class</tt> -- CSS class name for the generated DIV (default: "pagination")
     # * <tt>:previous_label</tt> -- default: "« Previous"
@@ -61,7 +61,7 @@ module WillPaginate
     #
     # All options not recognized by will_paginate will become HTML attributes on the container
     # element for pagination links (the DIV). For example:
-    # 
+    #
     #   <%= will_paginate @posts, :style => 'color:blue' %>
     #
     # will result in:
@@ -92,6 +92,35 @@ module WillPaginate
       # render HTML for pagination
       renderer.prepare collection, options, self
       renderer.to_html
+    end
+
+    # Returns HTML representing link ref tags links for a WillPaginate::Collection-like object.
+    #
+    # A port of something that is already in Kaminari see: https://github.com/amatsuda/kaminari/pull/200/files
+    #
+    # ==== Examples
+    # Basic usage:
+    #
+    #   In head:
+    #   <head>
+    #     <title>My Website</title>
+    #     <%= yield :head %>
+    #   </head>
+    #
+    #   Somewhere in body:
+    #   <% content_for :head do %>
+    #     <%= pagination_link_tags @items %>
+    #   <% end %>
+    #
+    #   #-> <link rel="next" href="http://example.com/items/page/3" />
+    #           <link rel="prev" href="http://example.com/items/page/1" />
+    #
+    def pagination_link_tags(collection, params = {})
+      output = []
+      link = '<link rel="%s" href="%s" />'
+      output << link % ["prev", url_for(params.merge(:page => collection.previous_page, :only_path => false))] if collection.previous_page
+      output << link % ["next", url_for(params.merge(:page => collection.next_page, :only_path => false))] if collection.next_page
+      output.join("\n").html_safe
     end
 
     # Renders a message containing number of displayed vs. total entries.
