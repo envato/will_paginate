@@ -1,6 +1,5 @@
 bundler_args: "--standalone --binstubs --without development"
 script: script/test_all
-services: mongodb
 before_script:
   - mysql -e 'create database will_paginate;'
   - psql -c 'create database will_paginate;' -U postgres
